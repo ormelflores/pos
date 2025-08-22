@@ -93,4 +93,7 @@ Route::middleware(['auth', 'active', 'device.verified', 'password.updated'])->pr
     Route::inertia('/orders/display', 'Kanban/Display')->name('orders.show');
 });
 
+Route::get('webhook/facebook', [\App\Http\Controllers\WebhookController::class, 'verifyWebhook']);
+Route::post('webhook/facebook', [\App\Http\Controllers\WebhookController::class, 'handleWebhook']);
+
 require __DIR__.'/auth.php';
