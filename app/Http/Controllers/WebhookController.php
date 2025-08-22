@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 class WebhookController extends Controller
 {
@@ -30,10 +29,7 @@ class WebhookController extends Controller
     {
        
         $input = $request->json()->all();
-        Mail::raw('Facebook POST payload: ' . json_encode($input), function ($message) {
-            $message->to('socialitest.laravel@gmail.com')
-                    ->subject('Webhook Payload');
-        });
+        \Log::info('Facebook POST payload: ' . json_encode($input));
         
         return response()->json(['status' => 'Webhook handled successfully']);
     }
