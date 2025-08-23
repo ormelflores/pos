@@ -27,10 +27,32 @@ class WebhookController extends Controller
 
     public function handleWebhook(Request $request)
     {
-       
-        $input = $request->json()->all();
-        \Log::info('Facebook POST payload: ' . json_encode($input));
-        
-        return response()->json(['status' => 'Webhook handled successfully']);
+        // Get raw POST body
+        $payload = $request->getContent();
+        \Log::info('Facebook request body: ' . $payload);
+
+        // Optional: validate X-Hub-Signature-256
+        $signature = $request->header('X-Hub-Signature-256');
+
+        $app_secret = "9717bb8af8a79155f363aa40b3d8d21f"; // set your App Secret in .env
+
+        if (!$signature || !hash_equals(
+            hash_hmac('sha256', $payload, $app_secret),
+            str_replace('sha256=', '', $signature)
+        )) {
+            \Log::warning('Warning - request header X-Hub-Signature-256 not present or invalid');
+            return response()->json(['error' => 'Invalid signature'], 401);
+        }
+
+        \Log::info('Request header X-Hub-Signature-256 validated');
+
+        // Process Facebook updates here
+        // Example: store updates in a log or database
+        // received_updates.unshift equivalent: prepend to array or store in DB
+        // For demo, just log
+        \Log::info('Received Facebook updates: ' . $payload);
+
+        // Respond 200 OK
+        return response()->json(['status' => 'OK'], 200);
     }
 }
